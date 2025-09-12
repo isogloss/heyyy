@@ -1,9 +1,13 @@
 #pragma once
 
+#ifdef LINUX_BUILD
+#include "platform_compat.h"
+#else
 #include <windows.h>
 #include <string>
 #include <memory>
 #include <vector>
+#endif
 
 class MonitorManager;
 class InjectionManager;

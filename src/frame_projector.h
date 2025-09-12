@@ -89,6 +89,9 @@ private:
     // Shared texture for receiving frames
     std::unique_ptr<SharedTexture> m_sharedTexture;
     
+    // Shared memory for communication with hook
+    std::unique_ptr<SharedMemory> m_sharedMemory;
+    
     // State
     bool m_projecting;
     bool m_vsyncEnabled;

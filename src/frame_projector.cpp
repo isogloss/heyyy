@@ -1,5 +1,6 @@
 #include "frame_projector.h"
 #include "monitor_manager.h"
+#include "shared_memory.h"
 #include <d3dcompiler.h>
 #include <vector>
 
@@ -100,8 +101,25 @@ bool FrameProjector::StartProjection(int monitorIndex) {
 
     // Initialize shared texture for receiving frames
     m_sharedTexture = std::make_unique<SharedTexture>();
-    if (!m_sharedTexture->InitializeConsumer(m_device.Get())) {
+    m_sharedMemory = std::make_unique<SharedMemory>();
+    
+    // Try to connect to hook's shared memory
+    if (!m_sharedMemory->OpenShared(L"Global\\Pick6SharedData")) {
+        m_sharedMemory.reset();
         return false;
+    }
+
+    // Wait briefly for hook to provide shared texture handle
+    for (int attempts = 0; attempts < 50; ++attempts) { // 5 second timeout
+        SharedMemory::SharedData sharedData;
+        if (m_sharedMemory->GetSharedData(sharedData) && sharedData.active && sharedData.sharedTextureHandle) {
+            // Set up shared texture consumer
+            m_sharedTexture->SetSharedHandle(sharedData.sharedTextureHandle);
+            if (m_sharedTexture->InitializeConsumer(m_device.Get())) {
+                break;
+            }
+        }
+        Sleep(100);
     }
 
     // Start render thread
@@ -131,6 +149,7 @@ void FrameProjector::StopProjection() {
         }
 
         // Cleanup
+        m_sharedMemory.reset();
         m_sharedTexture.reset();
         m_currentFrameSRV.Reset();
         m_samplerState.Reset();

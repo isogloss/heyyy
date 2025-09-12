@@ -3,6 +3,9 @@
 #include <shlobj.h>
 #include <fstream>
 #include <filesystem>
+#include <psapi.h>
+
+#pragma comment(lib, "psapi.lib")
 
 InjectionManager::InjectionManager()
     : m_injected(false)
@@ -103,8 +106,16 @@ InjectionStatistics InjectionManager::GetStatistics() const {
         HANDLE process = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, m_targetProcessId);
         m_statistics.processFound = (process != nullptr);
         if (process) {
+            // Get process path
+            wchar_t processPath[MAX_PATH] = {};
+            GetModuleFileNameExW(process, nullptr, processPath, MAX_PATH);
+            m_statistics.processPath = processPath;
             CloseHandle(process);
         }
+    } else {
+        // Try to find FiveM process
+        m_statistics.processId = FindFiveMProcess();
+        m_statistics.processFound = (m_statistics.processId != 0);
     }
     
     return m_statistics;
@@ -273,8 +284,16 @@ void InjectionManager::MonitorProcess() {
             if (GetExitCodeProcess(m_targetProcess, &exitCode) && exitCode != STILL_ACTIVE) {
                 // Process has exited
                 m_statistics.processFound = false;
+                m_statistics.injected = false;
+                m_injected = false;
                 break;
             }
         }
+        
+        // If auto-reattach is enabled and we lost connection, try to reconnect
+        // This would be implemented based on application settings
+        // For now, just monitor the process
     }
+    
+    return 0;
 }

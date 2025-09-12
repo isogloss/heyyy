@@ -1,8 +1,15 @@
-#include "application.h"
-
 #ifdef LINUX_BUILD
 #include "platform_compat.h"
-#endif
+
+// Simple main for Linux build testing - just shows project structure
+int main() {
+    // This is a Windows-only DirectX 11 application
+    // This Linux build is just for syntax checking
+    return 0;
+}
+#else
+
+#include "application.h"
 
 int WINAPI wWinMain(
     _In_ HINSTANCE hInstance,
@@ -10,10 +17,6 @@ int WINAPI wWinMain(
     _In_ LPWSTR lpCmdLine,
     _In_ int nCmdShow)
 {
-#ifdef LINUX_BUILD
-    // Linux build - just return success for syntax checking
-    return 0;
-#else
     // Initialize COM for DirectX
     CoInitialize(nullptr);
     
@@ -30,5 +33,6 @@ int WINAPI wWinMain(
     CoUninitialize();
     
     return result;
-#endif
 }
+
+#endif

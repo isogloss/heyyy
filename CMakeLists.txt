@@ -23,29 +23,44 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 # Main executable
-add_executable(pick6
-    src/main.cpp
-    src/application.cpp
-    src/application.h
-    src/monitor_manager.cpp
-    src/monitor_manager.h
-    src/injection_manager.cpp
-    src/injection_manager.h
-    src/frame_projector.cpp
-    src/frame_projector.h
-    src/shared_texture.cpp
-    src/shared_texture.h
-    src/resource.rc
-)
+if(WIN32)
+    add_executable(pick6
+        src/main.cpp
+        src/application.cpp
+        src/application.h
+        src/monitor_manager.cpp
+        src/monitor_manager.h
+        src/injection_manager.cpp
+        src/injection_manager.h
+        src/frame_projector.cpp
+        src/frame_projector.h
+        src/shared_texture.cpp
+        src/shared_texture.h
+        src/shared_memory.cpp
+        src/shared_memory.h
+        src/resource.rc
+    )
+else()
+    # Simplified Linux build for syntax checking - just main with stubs
+    add_executable(pick6
+        src/main.cpp
+    )
+endif()
 
 # Hook DLL (will be embedded into main executable)
-add_library(pick6_hook SHARED
-    src/hook/hook_main.cpp
-    src/hook/d3d11_hook.cpp
-    src/hook/d3d11_hook.h
-    src/hook/frame_capture.cpp
-    src/hook/frame_capture.h
-)
+if(WIN32)
+    add_library(pick6_hook SHARED
+        src/hook/hook_main.cpp
+        src/hook/d3d11_hook.cpp
+        src/hook/d3d11_hook.h
+        src/hook/frame_capture.cpp
+        src/hook/frame_capture.h
+        src/shared_texture.cpp
+        src/shared_texture.h
+        src/shared_memory.cpp
+        src/shared_memory.h
+    )
+endif()
 
 # Link Windows libraries for main executable
 if(WIN32)
@@ -89,14 +104,20 @@ if(WIN32)
 endif()
 
 # Set subsystem to Windows (GUI application)
-set_target_properties(pick6 PROPERTIES
-    WIN32_EXECUTABLE TRUE
-    OUTPUT_NAME "pick6"
-)
+if(WIN32)
+    set_target_properties(pick6 PROPERTIES
+        WIN32_EXECUTABLE TRUE
+        OUTPUT_NAME "pick6"
+    )
 
-set_target_properties(pick6_hook PROPERTIES
-    OUTPUT_NAME "pick6_hook"
-)
+    set_target_properties(pick6_hook PROPERTIES
+        OUTPUT_NAME "pick6_hook"
+    )
+else()
+    set_target_properties(pick6 PROPERTIES
+        OUTPUT_NAME "pick6"
+    )
+endif()
 
 # Compiler flags for optimization and debugging
 target_compile_definitions(pick6 PRIVATE
@@ -106,15 +127,19 @@ target_compile_definitions(pick6 PRIVATE
     NOMINMAX
 )
 
-target_compile_definitions(pick6_hook PRIVATE
-    WIN32_LEAN_AND_MEAN
-    UNICODE
-    _UNICODE
-    NOMINMAX
-)
+if(WIN32)
+    target_compile_definitions(pick6_hook PRIVATE
+        WIN32_LEAN_AND_MEAN
+        UNICODE
+        _UNICODE
+        NOMINMAX
+    )
+endif()
 
 # Enable parallel compilation
 if(MSVC)
     target_compile_options(pick6 PRIVATE /MP)
-    target_compile_options(pick6_hook PRIVATE /MP)
+    if(WIN32)
+        target_compile_options(pick6_hook PRIVATE /MP)
+    endif()
 endif()

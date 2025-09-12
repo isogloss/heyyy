@@ -1,5 +1,6 @@
 #include "frame_capture.h"
 #include "../shared_texture.h"
+#include "../shared_memory.h"
 
 // Static member definitions
 ComPtr<ID3D11Device> FrameCapture::s_device;
@@ -10,9 +11,19 @@ UINT FrameCapture::s_currentHeight = 0;
 DXGI_FORMAT FrameCapture::s_currentFormat = DXGI_FORMAT_UNKNOWN;
 bool FrameCapture::s_initialized = false;
 
+// Shared memory for communicating with main application
+static std::unique_ptr<SharedMemory> s_sharedMemory;
+
 bool FrameCapture::Initialize() {
     if (s_initialized) {
         return true;
+    }
+
+    // Create shared memory for communication with main app
+    s_sharedMemory = std::make_unique<SharedMemory>();
+    if (!s_sharedMemory->CreateShared(L"Global\\Pick6SharedData")) {
+        s_sharedMemory.reset();
+        return false;
     }
 
     s_initialized = true;
@@ -23,6 +34,14 @@ void FrameCapture::Shutdown() {
     s_sharedTexture.reset();
     s_context.Reset();
     s_device.Reset();
+    
+    // Mark shared memory as inactive
+    if (s_sharedMemory) {
+        SharedMemory::SharedData data = {};
+        data.active = false;
+        s_sharedMemory->UpdateSharedData(data);
+        s_sharedMemory.reset();
+    }
     
     s_currentWidth = 0;
     s_currentHeight = 0;
@@ -108,6 +127,20 @@ bool FrameCapture::InitializeSharedTexture(UINT width, UINT height, DXGI_FORMAT 
     s_currentWidth = width;
     s_currentHeight = height;
     s_currentFormat = format;
+
+    // Update shared memory with texture handle
+    if (s_sharedMemory) {
+        SharedMemory::SharedData data = {};
+        data.sharedTextureHandle = s_sharedTexture->GetSharedHandle();
+        data.frameEventHandle = nullptr; // Will be set by SharedTexture
+        data.width = width;
+        data.height = height;
+        data.format = static_cast<UINT>(format);
+        data.frameCount = 0;
+        data.active = true;
+        
+        s_sharedMemory->UpdateSharedData(data);
+    }
 
     return true;
 }
