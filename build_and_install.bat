@@ -5,6 +5,9 @@ echo =================================================================
 echo              FiveM Capture System - Complete Build
 echo =================================================================
 echo.
+echo NOTE: For standalone distribution, use 'standalone_installer.bat'
+echo       which downloads source code and builds automatically.
+echo.
 echo This script will:
 echo - Set up all dependencies automatically
 echo - Build the FiveM Capture System executable

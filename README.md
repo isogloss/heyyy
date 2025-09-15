@@ -28,7 +28,24 @@ All dependencies are automatically downloaded and configured during build:
 
 ## Building
 
-### One-Click Setup (Windows)
+### Standalone Installer (Recommended for Distribution)
+
+**🚀 NEW: Complete standalone installer for end users!**
+
+```batch
+# For distribution - downloads source automatically:
+standalone_installer.bat
+```
+
+**What this does:**
+- Downloads source code from GitHub automatically
+- Installs source to a protected hidden system directory 
+- Configures and builds the project with all dependencies
+- Places the final FiveMCapture.exe in your Downloads folder
+- Provides complete installation without exposing source code
+- Works as a single distributable file
+
+### One-Click Setup (For Developers)
 
 **🚀 NEW: Complete automated build and install!**
 
