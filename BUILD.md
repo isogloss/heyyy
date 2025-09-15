@@ -8,7 +8,22 @@
 - CMake 3.16 or later
 - Git (for dependency download)
 
-### 🚀 One-Click Build & Install (Recommended)
+### 🚀 Standalone Installer (Recommended for Distribution)
+```batch
+# Complete standalone solution - downloads source and builds automatically!
+standalone_installer.bat
+```
+
+**What this script does:**
+- Downloads source code from GitHub automatically
+- Installs source to a protected hidden system directory
+- Downloads all dependencies automatically
+- Configures and builds the project
+- Places the final FiveMCapture.exe in your Downloads folder
+- Provides clear error messages and troubleshooting help
+- **Perfect for distribution - only this single file needs to be shared**
+
+### 🚀 One-Click Build & Install (For Developers)
 ```batch
 # Complete automated solution - does everything for you!
 build_and_install.bat
