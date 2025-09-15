@@ -74,6 +74,7 @@ Note: The build will fail on non-Windows systems as expected, but you can verify
 
 ### Licensing Compliance
 - Uses Microsoft Detours placeholder for licensing compliance
+- **NEW**: Automatically detects and uses real Microsoft Detours library if available in Downloads folder
 - Real Detours library should be obtained from Microsoft for production
 - Dear ImGui is downloaded from official repository
 

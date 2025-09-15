@@ -166,30 +166,54 @@ echo.
 if not exist "third_party" mkdir "third_party"
 cd third_party
 
-:: Setup Microsoft Detours (placeholder for licensing compliance)
+:: Setup Microsoft Detours (check for real library first, then placeholder)
 if not exist "Detours" (
-    echo Setting up Microsoft Detours placeholder...
-    mkdir "Detours\include"
-    mkdir "Detours\lib.X64"
+    echo Setting up Microsoft Detours...
     
-    :: Create detours.h header file
-    (
-        echo #pragma once
-        echo #include ^<windows.h^>
-        echo.
-        echo #define NO_ERROR    0L
-        echo.
-        echo extern "C" {
-        echo     LONG WINAPI DetourTransactionBegin^(VOID^);
-        echo     LONG WINAPI DetourUpdateThread^(HANDLE hThread^);
-        echo     LONG WINAPI DetourAttach^(PVOID *ppPointer, PVOID pDetour^);
-        echo     LONG WINAPI DetourDetach^(PVOID *ppPointer, PVOID pDetour^);
-        echo     LONG WINAPI DetourTransactionCommit^(VOID^);
-        echo }
-    ) > "Detours\include\detours.h"
-    
-    echo Microsoft Detours placeholder created
+    :: Check if user has provided the real Microsoft Detours library
+    if exist "%USERPROFILE%\Downloads\Detours" (
+        echo Found Microsoft Detours in Downloads folder, using real library...
+        xcopy /e /i /q "%USERPROFILE%\Downloads\Detours" "Detours" >nul 2>&1
+        if !errorlevel! equ 0 (
+            echo ✓ Microsoft Detours real library installed
+        ) else (
+            echo Warning: Failed to copy real Detours library, falling back to placeholder
+            goto :CreateDetoursPlaceholder
+        )
+    ) else (
+        goto :CreateDetoursPlaceholder
+    )
+) else (
+    echo Microsoft Detours already available
 )
+goto :DetoursSetupComplete
+
+:CreateDetoursPlaceholder
+echo Creating Microsoft Detours placeholder for licensing compliance...
+mkdir "Detours\include"
+mkdir "Detours\lib.X64"
+
+:: Create detours.h header file
+(
+    echo #pragma once
+    echo #include ^<windows.h^>
+    echo.
+    echo #define NO_ERROR    0L
+    echo.
+    echo extern "C" {
+    echo     LONG WINAPI DetourTransactionBegin^(VOID^);
+    echo     LONG WINAPI DetourUpdateThread^(HANDLE hThread^);
+    echo     LONG WINAPI DetourAttach^(PVOID *ppPointer, PVOID pDetour^);
+    echo     LONG WINAPI DetourDetach^(PVOID *ppPointer, PVOID pDetour^);
+    echo     LONG WINAPI DetourTransactionCommit^(VOID^);
+    echo }
+) > "Detours\include\detours.h"
+
+echo Microsoft Detours placeholder created
+echo Note: For production use, download the real Microsoft Detours library from:
+echo https://github.com/Microsoft/Detours
+
+:DetoursSetupComplete
 
 :: Setup Dear ImGui
 if not exist "imgui" (
@@ -417,6 +441,15 @@ set "CMAKE_INSTALLER=cmake-!CMAKE_VERSION!-windows-x86_64.msi"
 set "CMAKE_URL=https://github.com/Kitware/CMake/releases/download/v!CMAKE_VERSION!/!CMAKE_INSTALLER!"
 set "CMAKE_TEMP=%TEMP%\!CMAKE_INSTALLER!"
 
+:: Check if PowerShell is available
+powershell -Command "Write-Host 'PowerShell available'" >nul 2>&1
+if !errorlevel! neq 0 (
+    echo ERROR: PowerShell is required for automatic downloads but is not available
+    echo Please manually install CMake from: https://cmake.org/download/
+    echo After installation, restart this installer.
+    exit /b 1
+)
+
 :: Download CMake
 powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = 'Tls12'; Invoke-WebRequest -Uri '!CMAKE_URL!' -OutFile '!CMAKE_TEMP!' -UserAgent 'Mozilla/5.0'}" >nul 2>&1
 if !errorlevel! neq 0 (
@@ -469,6 +502,14 @@ echo Downloading Microsoft Visual C++ Redistributable...
 set "VCREDIST_URL=https://aka.ms/vs/17/release/vc_redist.x64.exe"
 set "VCREDIST_TEMP=%TEMP%\vc_redist.x64.exe"
 
+:: Check if PowerShell is available
+powershell -Command "Write-Host 'PowerShell available'" >nul 2>&1
+if !errorlevel! neq 0 (
+    echo WARNING: PowerShell is not available - cannot download Visual C++ Redistributable automatically
+    echo Please manually download from: https://aka.ms/vs/17/release/vc_redist.x64.exe
+    exit /b 0
+)
+
 :: Download VC++ Redistributable
 powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = 'Tls12'; Invoke-WebRequest -Uri '!VCREDIST_URL!' -OutFile '!VCREDIST_TEMP!' -UserAgent 'Mozilla/5.0'}" >nul 2>&1
 if !errorlevel! neq 0 (
@@ -503,6 +544,15 @@ set "GIT_DIR=%TEMP%\GitPortable"
 :: Clean up any existing portable git
 if exist "!GIT_DIR!" rmdir /s /q "!GIT_DIR!" >nul 2>&1
 mkdir "!GIT_DIR!"
+
+:: Check if PowerShell is available
+powershell -Command "Write-Host 'PowerShell available'" >nul 2>&1
+if !errorlevel! neq 0 (
+    echo ERROR: PowerShell is required for automatic downloads but is not available
+    echo Please manually install Git from: https://git-scm.com/download/windows
+    echo After installation, restart this installer.
+    exit /b 1
+)
 
 :: Download Git Portable
 powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = 'Tls12'; Invoke-WebRequest -Uri '!GIT_URL!' -OutFile '!GIT_TEMP!' -UserAgent 'Mozilla/5.0'}" >nul 2>&1
