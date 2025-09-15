@@ -1,6 +1,6 @@
 # Microsoft Detours
 if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Detours")
-    message(STATUS "Detours not found, will be downloaded during build")
+    message(STATUS "Using Detours placeholder - In production, download from Microsoft GitHub")
 endif()
 
 # Dear ImGui
@@ -18,7 +18,14 @@ add_library(imgui STATIC ${IMGUI_SOURCES})
 target_include_directories(imgui PUBLIC imgui imgui/backends)
 target_link_libraries(imgui d3d11 dxgi)
 
-# Detours library (will be linked externally)
-add_library(detours INTERFACE)
-target_link_libraries(detours INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/Detours/lib.X64/detours.lib")
-target_include_directories(detours INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/Detours/include")
+# Detours library - use placeholder if real library not available
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Detours/lib.X64/detours.lib")
+    add_library(detours INTERFACE)
+    target_link_libraries(detours INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/Detours/lib.X64/detours.lib")
+    target_include_directories(detours INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/Detours/include")
+else()
+    # Use placeholder implementation
+    add_library(detours STATIC detours_placeholder.cpp)
+    target_include_directories(detours PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Detours/include")
+    message(WARNING "Using Detours placeholder. For production use, download Microsoft Detours from https://github.com/Microsoft/Detours")
+endif()
