@@ -1,0 +1,88 @@
+# Build directories
+build/
+out/
+bin/
+lib/
+
+# Visual Studio
+.vs/
+*.vcxproj.user
+*.sln.user
+*.aps
+*.pch
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.ipch
+*.VC.db
+*.VC.VC.opendb
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Testing/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+
+# Object files
+*.o
+*.lo
+*.slo
+*.obj
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Temporary files
+*.tmp
+*.temp
+*~
+*.swp
+*.swo
+
+# IDE
+.vscode/
+*.code-workspace
+
+# Dependencies (downloaded automatically)
+third_party/imgui/
+third_party/Detours/
+
+# Logs
+*.log
+
+# Screenshots/captures
+*.png
+*.jpg
+*.bmp
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
