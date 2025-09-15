@@ -8,7 +8,19 @@
 - CMake 3.16 or later
 - Git (for dependency download)
 
-### Quick Start
+### 🚀 One-Click Build & Install (Recommended)
+```batch
+# Complete automated solution - does everything for you!
+build_and_install.bat
+```
+
+**What this script does:**
+- Downloads all dependencies automatically
+- Configures and builds the project
+- Places the final FiveMCapture.exe in your Downloads folder
+- Provides clear error messages and troubleshooting help
+
+### Manual Build Process
 ```batch
 # 1. Clone repository
 git clone <repository-url>
