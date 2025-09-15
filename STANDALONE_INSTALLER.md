@@ -21,6 +21,10 @@ The standalone installer provides a single-file distribution solution for the Fi
 
 ### Automated Build Process
 - Downloads all dependencies automatically (Dear ImGui, Microsoft Detours placeholder)
+- **NEW**: Automatically downloads and installs Git Portable if Git is not available
+- **NEW**: Automatically downloads and installs CMake if not available
+- **NEW**: Downloads and installs Microsoft Visual C++ Redistributables for runtime compatibility
+- **NEW**: Verifies Windows SDK availability and provides installation guidance
 - Configures CMake with appropriate Visual Studio generators
 - Compiles the project in Release mode
 - Places final executable in user's Downloads folder
@@ -29,8 +33,10 @@ The standalone installer provides a single-file distribution solution for the Fi
 ### Distribution Benefits
 - **Single file distribution**: Only the installer script needs to be shared
 - **No source code exposure**: Users never see or have access to source files
-- **Automated setup**: No manual dependency management required
+- **Fully automated setup**: No manual dependency management required
+- **Self-contained**: Downloads all required build tools and runtime dependencies
 - **Error handling**: Clear error messages and troubleshooting guidance
+- **Runtime compatibility**: Installs Visual C++ Redistributables automatically
 
 ## Usage
 
@@ -38,8 +44,14 @@ The standalone installer provides a single-file distribution solution for the Fi
 
 1. Download `standalone_installer.bat`
 2. Run the script (may require administrator privileges)
-3. Wait for the installation to complete (5-10 minutes)
-4. Find `FiveMCapture.exe` in your Downloads folder
+3. The installer will automatically:
+   - Download Git Portable if Git is not installed
+   - Download CMake if not available
+   - Download source code and dependencies
+   - Install Visual C++ Redistributables
+   - Build the executable
+4. Wait for the installation to complete (5-15 minutes depending on downloads)
+5. Find `FiveMCapture.exe` in your Downloads folder
 
 ### For Developers (Testing)
 

@@ -82,15 +82,17 @@ fi
 echo "Step 2: Downloading source code from GitHub..."
 echo
 
-# Check if git is available
+# Check if git is available, offer installation guidance if not
 if ! command -v git &> /dev/null; then
     echo "ERROR: Git is not installed"
     echo
+    echo "Git is required to download source code and dependencies."
     echo "Please install Git using your package manager:"
     echo "  Ubuntu/Debian: sudo apt install git"
     echo "  CentOS/RHEL:   sudo yum install git"
     echo "  macOS:         brew install git"
     echo
+    echo "After installing Git, restart this installer."
     rm -rf "$TEMP_BUILD_PATH"
     exit 1
 fi
@@ -190,19 +192,27 @@ echo
 mkdir -p build
 cd build
 
-# Check for CMake
+# Check for CMake with more detailed guidance
 if ! command -v cmake &> /dev/null; then
     echo "ERROR: CMake is not installed"
     echo
+    echo "CMake is required to configure the build system."
     echo "Please install CMake using your package manager:"
     echo "  Ubuntu/Debian: sudo apt install cmake"
     echo "  CentOS/RHEL:   sudo yum install cmake"
+    echo "  Fedora:        sudo dnf install cmake"
     echo "  macOS:         brew install cmake"
     echo
+    echo "Minimum required version: CMake 3.16"
+    echo "After installing CMake, restart this installer."
     rm -rf "$TEMP_BUILD_PATH"
     rm -rf "$HIDDEN_SOURCE_PATH"
     exit 1
 fi
+
+# Check CMake version
+CMAKE_VERSION=$(cmake --version | head -n1 | cut -d' ' -f3)
+echo "Found CMake version: $CMAKE_VERSION"
 
 # Configure with CMake (this will fail on non-Windows systems as expected)
 echo "Configuring with CMake..."
