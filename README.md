@@ -28,7 +28,22 @@ All dependencies are automatically downloaded and configured during build:
 
 ## Building
 
-### Automated Setup
+### One-Click Setup (Windows)
+
+**🚀 NEW: Complete automated build and install!**
+
+```batch
+# Simple one-click solution:
+build_and_install.bat
+```
+
+This script automatically:
+- Downloads all dependencies
+- Builds the project 
+- Places FiveMCapture.exe in your Downloads folder
+- Handles all errors with helpful messages
+
+### Manual Setup
 
 ```bash
 # Clone the repository
